@@ -12,7 +12,6 @@ public class AccountForm {
 	
 	private String name;
 	
-	
 	@Cpf @NotBlank(message ="É necessário informar um cpf para abertura de nova conta.") 
 	private String cpf;
 	

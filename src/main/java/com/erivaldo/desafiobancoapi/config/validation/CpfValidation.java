@@ -7,7 +7,7 @@ public class CpfValidation implements ConstraintValidator<Cpf, String> {
 
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
-		System.out.println(value);
+//		System.out.println(value);
 		if(value.equals("11111111111")){
 			return false;
 		}else {
