@@ -1,0 +1,4 @@
+INSERT INTO account(account_id, balance,cpf,name) 
+VALUES
+(880, 50.00, '00000000000', 'ERIVALDO LOURENCO MARIANO'),
+ (881, 70.00, '11111111111', 'JOSE DA SILVA');
