@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.erivaldo.desafiobancoapi.config.validation.MessageDto;
 import com.erivaldo.desafiobancoapi.controller.dto.AccountDto;
 import com.erivaldo.desafiobancoapi.model.Account;
 import com.erivaldo.desafiobancoapi.repository.AccountRepository;
@@ -29,38 +30,42 @@ public class AccountServiceImpl  implements AccountService{
 		return AccountDto.convert(accounts);
 	}
 	
-	public ResponseEntity<String> save(Account account, UriComponentsBuilder uriBuilder) {
+	public AccountDto get(Long accountId) {
+			Account account = accountRepository.getById(accountId);
+			return new AccountDto(account);
+	}
+	
+	public ResponseEntity<MessageDto> save(Account account, UriComponentsBuilder uriBuilder) {
 		accountRepository.save(account);
 		URI uri = uriBuilder.path("/accounts/{id}").buildAndExpand(account.getAccountId()).toUri();
-		return ResponseEntity.created(uri).body("Conta cadastrada com sucesso!");
+		return ResponseEntity.created(uri).body(new MessageDto("Conta cadastrada com sucesso!"));
 	}
 
 	@Override
-	public ResponseEntity<String> deposit(Long accountId, double value) {
+	public ResponseEntity<MessageDto> deposit(Long accountId, double value) {
 		Account account = accountRepository.getById(accountId);
 		account.setBalance(account.getBalance()+value);
 		accountRepository.save(account);
-		return ResponseEntity.accepted().body("Depósito realizado com sucesso!");
+		return ResponseEntity.accepted().body(new MessageDto("Depósito realizado com sucesso!"));
 	}
 
 	@Override
-	public ResponseEntity<String> cashOut(Long accountId, double value) {
+	public ResponseEntity<MessageDto> cashOut(Long accountId, double value) {
 		
 		try {
 			Account account = accountRepository.getById(accountId);
 			checkOperation(value, account);
 			account.setBalance(account.getBalance()-value);
 			accountRepository.save(account);
-			return ResponseEntity.accepted().body("Saque realizado com sucesso!");
+			return ResponseEntity.accepted().body(new MessageDto("Saque realizado com sucesso!"));
 			
 		} catch (MaxLimitException | WithoutBalanceException e) {
-			return ResponseEntity.accepted().body(e.getMessage());
+			return ResponseEntity.accepted().body(new MessageDto(e.getMessage()));
 		}
 	}
 
 	@Override
-	public ResponseEntity<String> transfer(Long depositorID, Long beneficiaryID, double value) {
-		
+	public ResponseEntity<MessageDto> transfer(Long depositorID, Long beneficiaryID, double value) {
 		
         try {
             Account depositor = accountRepository.getById(depositorID);
@@ -70,7 +75,7 @@ public class AccountServiceImpl  implements AccountService{
             return execTranfer(depositor, beneficiary, value);
 
         } catch ( MaxLimitException | WithoutBalanceException e) {
-            return ResponseEntity.accepted().body(e.getMessage());
+            return ResponseEntity.accepted().body(new MessageDto(e.getMessage()));
         }
 	}
 	
@@ -89,13 +94,14 @@ public class AccountServiceImpl  implements AccountService{
             throw new WithoutBalanceException("Saldo insuficiente para a operação.");
         }
     }
+  
     
-    private ResponseEntity<String> execTranfer(Account depositor, Account beneficiary, double value) {
+    private ResponseEntity<MessageDto> execTranfer(Account depositor, Account beneficiary, double value) {
     	depositor.setBalance(depositor.getBalance() - value);
 		beneficiary.setBalance(beneficiary.getBalance() + value);
 		accountRepository.save(depositor);
 		accountRepository.save(beneficiary);
-		return ResponseEntity.accepted().body("Transferência realizada com sucesso!");
+		return ResponseEntity.accepted().body(new MessageDto("Transferência realizada com sucesso!"));
     	
     }
 

@@ -6,16 +6,22 @@ import java.util.stream.Collectors;
 import com.erivaldo.desafiobancoapi.model.Account;
 
 public class AccountDto {
+	private Long accountId;
 	private String name;
 	private String cpf;
 	private double balance;
 	
 	public AccountDto(Account account) {
+		this.accountId = account.getAccountId();
 		this.name = account.getName();
 		this.cpf = account.getCpf();
 		this.balance =  account.getBalance();
 	}
 
+	public Long getAccountId() {
+		return accountId;
+	}
+	
 	public String getName() {
 		return name;
 	}
