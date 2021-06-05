@@ -34,7 +34,6 @@ public class AccountController {
 		this.accountService = accountService;
 	}
 	
-	
 	@GetMapping
 	public List<AccountDto> list(){
 		return accountService.list();
@@ -54,19 +53,19 @@ public class AccountController {
 	
 	@PostMapping
 	@RequestMapping("/deposit")
-	public ResponseEntity<MessageDto> depositAccount(@RequestBody  @Valid BalanceForm form){
+	public ResponseEntity<MessageDto> depositAccount(@RequestBody  BalanceForm form){
 		return accountService.deposit(form.getAccountId(), form.getValue());
 	}
 	
 	@PostMapping
 	@RequestMapping("/cashout")
-	public ResponseEntity<MessageDto> cashOutAccount(@RequestBody  @Valid BalanceForm form){
+	public ResponseEntity<MessageDto> cashOutAccount(@RequestBody  BalanceForm form){
 		return accountService.cashOut(form.getAccountId(), form.getValue());
 	}
 	
 	@PostMapping
 	@RequestMapping("/transfer")
-	public ResponseEntity<MessageDto> transferAccount(@RequestBody  @Valid TransferForm form){
+	public ResponseEntity<MessageDto> transferAccount(@RequestBody  TransferForm form){
 		return accountService.transfer(form.getDepositorID(),form.getBeneficiaryID() ,form.getValue());
 	}
 }
