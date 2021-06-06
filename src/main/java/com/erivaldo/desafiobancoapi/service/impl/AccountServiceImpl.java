@@ -6,12 +6,15 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.erivaldo.desafiobancoapi.config.validation.MessageDto;
+import com.erivaldo.desafiobancoapi.config.validation.Validation;
 import com.erivaldo.desafiobancoapi.controller.dto.AccountDto;
+import com.erivaldo.desafiobancoapi.controller.dto.BalanceDto;
+import com.erivaldo.desafiobancoapi.controller.dto.TransferDto;
 import com.erivaldo.desafiobancoapi.model.Account;
 import com.erivaldo.desafiobancoapi.repository.AccountRepository;
 import com.erivaldo.desafiobancoapi.service.AccountService;
@@ -22,6 +25,7 @@ import com.erivaldo.desafiobancoapi.service.exception.WithoutBalanceException;
 public class AccountServiceImpl  implements AccountService{
 	
 	private AccountRepository accountRepository;
+	private Validation valid = new Validation();
 	
 	public AccountServiceImpl(AccountRepository accountRepository){
 		this.accountRepository = accountRepository;
@@ -44,82 +48,91 @@ public class AccountServiceImpl  implements AccountService{
 	}
 	
 	@Override
-	public ResponseEntity<MessageDto> save(Account account, UriComponentsBuilder uriBuilder) {
-		accountRepository.save(account);
-		URI uri = uriBuilder.path("/accounts/{id}").buildAndExpand(account.getAccountId()).toUri();
-		return ResponseEntity.created(uri).body(new MessageDto("Conta cadastrada com sucesso!"));
+	public ResponseEntity<AccountDto> save(Account account, UriComponentsBuilder uriBuilder) {
+		AccountDto accountDto = new AccountDto();
+		try {
+			valid.checkMinimalBalance(account.getBalance());
+			valid.checkCPF(account.getCpf());
+			accountRepository.save(account);
+			URI uri = uriBuilder.path("/accounts/{id}").buildAndExpand(account.getAccountId()).toUri();
+			accountDto = new AccountDto(account);
+			accountDto.setMessage("Conta cadastrada com sucesso!");
+			return ResponseEntity.created(uri).body(accountDto);
+		}catch ( Exception e ) {
+			accountDto.setMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(accountDto);
+		}
 	}
 
 	@Override
-	public ResponseEntity<MessageDto> deposit(Long accountId, double value) {
+	public ResponseEntity<BalanceDto> deposit(Long accountId, double value) {
+		BalanceDto newBalance =  new BalanceDto();
 		try {
 			Account account = accountRepository.getById(accountId);
 			account.setBalance(account.getBalance()+value);
 			accountRepository.save(account);
-			return ResponseEntity.accepted().body(new MessageDto("Depósito realizado com sucesso!"));
+			newBalance.setAccountId(account.getAccountId());
+			newBalance.setBalance(account.getBalance());
+			newBalance.setMessage("Depósito realizado com sucesso!");
+			return ResponseEntity.accepted().body(newBalance);
 		}catch(EntityNotFoundException e) {
-	     	return ResponseEntity.badRequest().body(new MessageDto("Esta conta não existe!"));
+			newBalance.setMessage("Esta conta não existe!");
+			return ResponseEntity.badRequest().body(newBalance);
 	    }
 	}
 
 	@Override
-	public ResponseEntity<MessageDto> cashOut(Long accountId, double value) {
-		
+	public ResponseEntity<BalanceDto> cashOut(Long accountId, double value) {
+		BalanceDto newBalance =  new BalanceDto();
 		try {
 			Account account = accountRepository.getById(accountId);
-			checkOperation(value, account);
+			valid.checkOperation(value, account);
 			account.setBalance(account.getBalance()-value);
 			accountRepository.save(account);
-			return ResponseEntity.accepted().body(new MessageDto("Saque realizado com sucesso!"));
+			newBalance.setAccountId(account.getAccountId());
+			newBalance.setBalance(account.getBalance());
+			newBalance.setMessage("Saque realizado com sucesso!");
+			return ResponseEntity.accepted().body(newBalance);
 			
 		} catch (MaxLimitException | WithoutBalanceException e) {
-			return ResponseEntity.badRequest().body(new MessageDto(e.getMessage()));
+			newBalance.setMessage(e.getMessage());
+			return ResponseEntity.badRequest().body(newBalance);
 		}
 		 catch(EntityNotFoundException e) {
-	     	return ResponseEntity.badRequest().body(new MessageDto("Esta conta não existe!"));
+			newBalance.setMessage("Esta conta não existe!");
+	     	return ResponseEntity.badRequest().body(newBalance);
 	    }
 	}
 
 	@Override
-	public ResponseEntity<MessageDto> transfer(Long depositorID, Long beneficiaryID, double value) {
-		
+	public ResponseEntity<TransferDto> transfer(Long depositorID, Long beneficiaryID, double value) {
+		TransferDto trf = new TransferDto();
         try {
             Account depositor = accountRepository.getById(depositorID);
             Account beneficiary = accountRepository.getById(beneficiaryID);
 
-            checkOperation(value, depositor);
+            valid.checkOperation(value, depositor);
             return execTranfer(depositor, beneficiary, value);
 
         } catch ( MaxLimitException | WithoutBalanceException e) {
-            return ResponseEntity.badRequest().body(new MessageDto(e.getMessage()));
+        	trf.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(trf);
         } catch(EntityNotFoundException e) {
-        	return ResponseEntity.badRequest().body(new MessageDto("Uma conta nao foi encontrada"));
+        	trf.setMessage("Uma conta nao foi encontrada");
+        	return ResponseEntity.badRequest().body(trf);
         }
 	}
 	
-    private void checkOperation(Double value, Account depositor) {
-    	checkMaxLimit(value);
-    	checkBalance(value, depositor.getBalance());
-    }
-
-    private void checkMaxLimit(double value) {
-        if(value > 500) {
-            throw new MaxLimitException("Esta operação tem um limite máximo de 500 por operação.");
-        }
-    }
-    
-    private void checkBalance(double value, double saldo) {
-        if(value > saldo) {
-            throw new WithoutBalanceException("Saldo insuficiente para a operação.");
-        }
-    }
-    
-    private ResponseEntity<MessageDto> execTranfer(Account depositor, Account beneficiary, double value) {
+    private ResponseEntity<TransferDto> execTranfer(Account depositor, Account beneficiary, double value) {
     	depositor.setBalance(depositor.getBalance() - value);
 		beneficiary.setBalance(beneficiary.getBalance() + value);
 		accountRepository.save(depositor);
 		accountRepository.save(beneficiary);
-		return ResponseEntity.accepted().body(new MessageDto("Transferência realizada com sucesso!"));
+		
+		TransferDto trf = new TransferDto();
+		trf.setMessage("Transferência realizada com sucesso!");
+		
+		return ResponseEntity.accepted().body(trf);
     	
     }
 

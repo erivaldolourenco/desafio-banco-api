@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.erivaldo.desafiobancoapi.config.validation.MessageDto;
 import com.erivaldo.desafiobancoapi.controller.dto.AccountDto;
+import com.erivaldo.desafiobancoapi.controller.dto.BalanceDto;
+import com.erivaldo.desafiobancoapi.controller.dto.TransferDto;
 import com.erivaldo.desafiobancoapi.controller.form.AccountForm;
 import com.erivaldo.desafiobancoapi.controller.form.BalanceForm;
 import com.erivaldo.desafiobancoapi.controller.form.TransferForm;
@@ -40,7 +41,7 @@ public class AccountController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<MessageDto> newAccount(@RequestBody @Valid AccountForm form, UriComponentsBuilder uriBuilder) {
+	public ResponseEntity<AccountDto> newAccount(@RequestBody @Valid AccountForm form, UriComponentsBuilder uriBuilder) {
 			Account account = form.convert();
 			return accountService.save(account, uriBuilder);
 	}
@@ -53,19 +54,19 @@ public class AccountController {
 	
 	@PostMapping
 	@RequestMapping("/deposit")
-	public ResponseEntity<MessageDto> depositAccount(@RequestBody  BalanceForm form){
+	public ResponseEntity<BalanceDto> depositAccount(@RequestBody  BalanceForm form){
 		return accountService.deposit(form.getAccountId(), form.getValue());
 	}
 	
 	@PostMapping
 	@RequestMapping("/cashout")
-	public ResponseEntity<MessageDto> cashOutAccount(@RequestBody  BalanceForm form){
+	public ResponseEntity<BalanceDto> cashOutAccount(@RequestBody  BalanceForm form){
 		return accountService.cashOut(form.getAccountId(), form.getValue());
 	}
 	
 	@PostMapping
 	@RequestMapping("/transfer")
-	public ResponseEntity<MessageDto> transferAccount(@RequestBody  TransferForm form){
+	public ResponseEntity<TransferDto> transferAccount(@RequestBody  TransferForm form){
 		return accountService.transfer(form.getDepositorID(),form.getBeneficiaryID() ,form.getValue());
 	}
 }

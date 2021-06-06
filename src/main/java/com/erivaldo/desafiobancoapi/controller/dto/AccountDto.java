@@ -4,12 +4,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.erivaldo.desafiobancoapi.model.Account;
+//import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 
 public class AccountDto {
 	private Long accountId;
 	private String name;
 	private String cpf;
 	private double balance;
+	private String message;
+	
+	public AccountDto() {}
 	
 	public AccountDto(Account account) {
 		this.accountId = account.getAccountId();
@@ -32,6 +36,14 @@ public class AccountDto {
 
 	public double getBalance() {
 		return balance;
+	}
+	
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 	public static List<AccountDto> convert(List<Account> bankAccounts) {

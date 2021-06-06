@@ -1,21 +1,12 @@
 package com.erivaldo.desafiobancoapi.controller.form;
 
-
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-
-import com.erivaldo.desafiobancoapi.config.validation.Cpf;
 import com.erivaldo.desafiobancoapi.model.Account;
 
 
 public class AccountForm {
 	
 	private String name;
-	
-	@Cpf @NotBlank(message ="É necessário informar um cpf para abertura de nova conta.") 
-	private String cpf;
-	
-	@Min(value = 50, message = "Saldo insuficiente para abertura de nova conta.")
+	private String cpf;	
 	private double balance;
 	
 	
@@ -40,13 +31,10 @@ public class AccountForm {
 	public Account convert() {
 		return new Account(name,cpf,balance);
 	}
-	public boolean validationCpf() {
-		if(this.getCpf() == "11111111111") {
-			return false;
-		}else {
-			return true;
-		}
-		
+	
+	@Override
+	public String toString() {
+		return "AccountForm [name=" + name + ", cpf=" + cpf + ", balance=" + balance + "]";
 	}
 	
 }
