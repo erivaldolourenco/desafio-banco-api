@@ -36,7 +36,10 @@ public class CreateAcoountSteps extends StepDef{
 
     @Before
     public void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(accountController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(accountController).addFilter(((request, response, chain) -> {
+            response.setCharacterEncoding("UTF-8");
+            chain.doFilter(request, response);
+        })).build();
     }
     
     

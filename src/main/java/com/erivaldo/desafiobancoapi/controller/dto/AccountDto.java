@@ -12,6 +12,7 @@ public class AccountDto {
 	private String cpf;
 	private double balance;
 	private String message;
+	private Long accountNumber;
 	
 	public AccountDto() {}
 	
@@ -20,6 +21,7 @@ public class AccountDto {
 		this.name = account.getName();
 		this.cpf = account.getCpf();
 		this.balance =  account.getBalance();
+		this.accountNumber = account.getAccountNumber();
 	}
 
 	public Long getAccountId() {
@@ -38,6 +40,12 @@ public class AccountDto {
 		return balance;
 	}
 	
+	
+	
+	public Long getAccountNumber() {
+		return accountNumber;
+	}
+
 	public String getMessage() {
 		return message;
 	}

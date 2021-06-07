@@ -42,7 +42,12 @@ public class AccountController {
 	
 	@PostMapping
 	public ResponseEntity<AccountDto> newAccount(@RequestBody @Valid AccountForm form, UriComponentsBuilder uriBuilder) {
-			Account account = form.convert();
+			Account account;
+			if(form.getAccountNumber() == null) {
+				 account = form.convert();
+			}else {
+				 account = form.convertWithAccountNumber();
+			}
 			return accountService.save(account, uriBuilder);
 	}
 	

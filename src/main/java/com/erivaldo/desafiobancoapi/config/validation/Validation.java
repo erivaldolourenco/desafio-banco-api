@@ -37,7 +37,7 @@ public class Validation {
         if(cpf.isEmpty()) {
             throw new CpfNotInformedException("É necessário informar um cpf para abertura de nova conta.");
         }else if (cpf.equals("111111111111")){
-    	throw new CpfNotInformedException("CPF informado para criação de conta está inválido.");
+        	throw new CpfNotInformedException("CPF informado para criação de conta está inválido.");
         }
     }
     

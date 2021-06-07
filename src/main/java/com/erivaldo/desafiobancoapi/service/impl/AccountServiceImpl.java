@@ -53,7 +53,7 @@ public class AccountServiceImpl  implements AccountService{
 		try {
 			valid.checkMinimalBalance(account.getBalance());
 			valid.checkCPF(account.getCpf());
-			accountRepository.save(account);
+			accountRepository.save(account);	
 			URI uri = uriBuilder.path("/accounts/{id}").buildAndExpand(account.getAccountId()).toUri();
 			accountDto = new AccountDto(account);
 			accountDto.setMessage("Conta cadastrada com sucesso!");

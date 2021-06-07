@@ -8,7 +8,7 @@ public class AccountForm {
 	private String name;
 	private String cpf;	
 	private double balance;
-	
+	private Long accountNumber;
 	
 	public String getName() {
 		return name;
@@ -28,8 +28,18 @@ public class AccountForm {
 	public void setBalance(double balance) {
 		this.balance = balance;
 	}
+	
+	public Long getAccountNumber() {
+		return accountNumber;
+	}
+	public void setAccountNumber(Long accountNumber) {
+		this.accountNumber = accountNumber;
+	}
 	public Account convert() {
 		return new Account(name,cpf,balance);
+	}
+	public Account convertWithAccountNumber() {
+		return new Account(name,cpf,balance, accountNumber);
 	}
 	
 	@Override
