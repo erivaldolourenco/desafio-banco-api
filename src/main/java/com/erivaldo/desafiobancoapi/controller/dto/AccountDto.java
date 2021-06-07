@@ -57,4 +57,11 @@ public class AccountDto {
 	public static List<AccountDto> convert(List<Account> bankAccounts) {
 		return bankAccounts.stream().map(AccountDto::new).collect(Collectors.toList());
 	}
+
+	@Override
+	public String toString() {
+		return "AccountDto [accountId=" + accountId + ", name=" + name + ", cpf=" + cpf + ", balance=" + balance
+				+ ", message=" + message + ", accountNumber=" + accountNumber + "]";
+	}
+	
 }

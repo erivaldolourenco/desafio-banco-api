@@ -5,6 +5,7 @@ import com.erivaldo.desafiobancoapi.service.exception.CpfNotInformedException;
 import com.erivaldo.desafiobancoapi.service.exception.MaxLimitException;
 import com.erivaldo.desafiobancoapi.service.exception.MinimalBalanceException;
 import com.erivaldo.desafiobancoapi.service.exception.WithoutBalanceException;
+import br.com.caelum.stella.validation.CPFValidator;
 
 public class Validation {
 	
@@ -34,10 +35,20 @@ public class Validation {
     }
     
     public void checkCPF(String cpf) {
-        if(cpf.isEmpty()) {
+        if(cpf == null) {
             throw new CpfNotInformedException("É necessário informar um cpf para abertura de nova conta.");
-        }else if (cpf.equals("111111111111")){
+        }else if (validarCpf(cpf)){
         	throw new CpfNotInformedException("CPF informado para criação de conta está inválido.");
+        }
+    }
+    
+    public static boolean validarCpf(String cpf) {
+        CPFValidator cpfValidator = new CPFValidator();
+        try{
+            cpfValidator.assertValid(cpf);
+            return false;
+        }catch(Exception e){
+            return true;
         }
     }
     

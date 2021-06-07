@@ -23,10 +23,7 @@ import io.cucumber.java.pt.Então;
 import io.cucumber.java.pt.Quando;
 import com.google.gson.Gson;
 
-public class DepositSteps extends StepDef{
-	
-	@Autowired
-	AccountService accountService;
+public class DepositSteps extends StepDef {
 	
     @Autowired
     private AccountController accountController;
@@ -41,7 +38,7 @@ public class DepositSteps extends StepDef{
     
     private String response;
     private Exception error;
-    private BalanceForm balanceForm;
+    private BalanceForm balanceForm = null;
     private BalanceDto balanceDto;
     private AccountForm accountForm = null;
     private AccountDto accountDto;
@@ -57,16 +54,16 @@ public class DepositSteps extends StepDef{
 		        accountForm.setAccountNumber(Long.parseLong(columns.get("Numero Conta")));
 		        accountForm.setBalance(Double.parseDouble(columns.get("Saldo")));
 				 accountForm.setName("Usuario Teste");
-				 accountForm.setCpf("99999999999");
+				 accountForm.setCpf("96236645086");
 		    }
 
 		String reponseAccount =  execPost("/accounts", accountForm);
 		accountDto = gson.fromJson(reponseAccount, AccountDto.class);
+		
     }
 
     @Dado("que seja solicitado um depósito de {string}")
-    public void que_seja_solicitado_um_depósito_de(String string) {
-    	
+    public void que_seja_solicitado_um_depósito_de(String string) { 	
     	balanceForm = new BalanceForm();
     	balanceForm.setAccountId(accountDto.getAccountId());
     	balanceForm.setValue(Double.parseDouble(string));
@@ -75,7 +72,8 @@ public class DepositSteps extends StepDef{
             balanceDto = gson.fromJson(response, BalanceDto.class);
         }catch (Exception e) {
             error = e;
-            System.out.println(error.getMessage());
+//            System.out.println("ERROR");
+//            System.out.println(error.getMessage());
         }
     }
     
@@ -86,13 +84,12 @@ public class DepositSteps extends StepDef{
     
     @Então("deverá ser apresentada a seguinte mensagem {string}")
     public void deverá_ser_apresentada_a_seguinte_mensagem(String string) {
-    	
     	assertEquals(string, balanceDto.getMessage() );
     }
     
     @Então("o saldo da conta {string} deverá ser de {string}")
     public void o_saldo_da_conta_deverá_ser_de(String string, String string2) {
-    	assertEquals(string, balanceDto.getBalance());
+    	assertEquals(string2, String.valueOf(balanceDto.getBalance()));
     }
     
 }

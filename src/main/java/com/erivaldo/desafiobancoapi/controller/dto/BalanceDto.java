@@ -2,7 +2,7 @@ package com.erivaldo.desafiobancoapi.controller.dto;
 
 public class BalanceDto {
 	private Long accountId;
-	private double newBalance;
+	private double balance;
 	private String message;
 	
 	
@@ -10,7 +10,7 @@ public class BalanceDto {
 	
 	public BalanceDto(Long accountId, double balance) {
 		this.accountId = accountId;
-		this.newBalance = balance;
+		this.balance = balance;
 		this.message = "";
 	}
 	
@@ -22,16 +22,21 @@ public class BalanceDto {
 		this.accountId = accountId;
 	}
 	public double getBalance() {
-		return newBalance;
+		return balance;
 	}
 	public void setBalance(double value) {
-		this.newBalance = value;
+		this.balance = value;
 	}
 	public String getMessage() {
 		return message;
 	}
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	@Override
+	public String toString() {
+		return "BalanceDto [accountId=" + accountId + ", newBalance=" + balance + ", message=" + message + "]";
 	}
 	
 	

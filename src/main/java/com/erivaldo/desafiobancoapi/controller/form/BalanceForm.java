@@ -18,6 +18,10 @@ public class BalanceForm {
 	public void setValue(double value) {
 		this.value = value;
 	}
+	@Override
+	public String toString() {
+		return "BalanceForm [accountId=" + accountId + ", value=" + value + "]";
+	}
 	
 	
 	

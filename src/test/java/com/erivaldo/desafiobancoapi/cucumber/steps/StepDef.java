@@ -3,6 +3,9 @@ package com.erivaldo.desafiobancoapi.cucumber.steps;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import com.erivaldo.desafiobancoapi.controller.dto.AccountDto;
+import com.erivaldo.desafiobancoapi.controller.dto.BalanceDto;
 import com.google.gson.Gson;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
